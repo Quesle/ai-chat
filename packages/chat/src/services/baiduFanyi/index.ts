@@ -1,0 +1,87 @@
+/**
+ * 接入百度翻译API
+ *
+ * 开发者控制台（查询APP ID和Key）
+ * https://fanyi-api.baidu.com/manage/developer
+ *
+ * 开发者文档 （查询API使用）
+ * https://fanyi-api.baidu.com/doc/21
+ */
+
+import { createFormDataFromJson } from "@/utils/formData";
+import axios, { AxiosResponse } from "axios";
+import md5 from "crypto-js/md5";
+
+const APP_ID = "20240120001946711";
+const APP_KEY = "YVOxvc4szQepx_TZL1Y2";
+const API_URL = "http://api.fanyi.baidu.com/api/trans/vip/translate";
+
+const generateSign = (val: string, salt: number | string) => {
+  const q = val;
+  const string1 = `${APP_ID}${q}${salt}${APP_KEY}`;
+  return md5(string1);
+};
+
+export const translate = async (val: string) => {
+  const salt = `1705746815447`;
+  const params: { [key: string]: any } = {
+    q: val,
+    from: "en",
+    to: "zh",
+    appid: APP_ID,
+    salt,
+    sign: generateSign(val, salt),
+  };
+
+  const formData = createFormDataFromJson(params);
+
+  //   return axios.post(API_URL, formData, {
+  //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  //   });
+  //   const res = await axios
+  //     .get(API_URL, {
+  //       params,
+  //       headers: {
+  //         "Access-Control-Allow-Origin": "*",
+  //         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+  //         "Access-Control-Allow-Headers": "Content-Type",
+  //         referer: "never",
+  //       },
+  //     })
+  //     .catch((err) => console.log(err));
+  //   console.log(res);
+
+  let content = "";
+  Object.keys(params).forEach((key: string, index: number) => {
+    if (index === 0) {
+      content += `?${key}=${params[key]}`;
+    } else {
+      content += `&${key}=${params[key]}`;
+    }
+  });
+
+  try {
+    const url = `${API_URL}${content}`;
+    // const url = "http://dev-ga.growingio.cn/api/backend/enterprise";
+    console.log(url);
+    const res = await fetch(url, {
+      cache: "no-store",
+      method: "GET",
+      keepalive: false,
+    });
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    console.log(res);
+    const data = await res.json();
+    console.log(data);
+  } catch (err) {
+    console.log("cccc111", err);
+  }
+  console.log("cccc");
+};
+
+export default translate;

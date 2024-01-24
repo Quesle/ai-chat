@@ -5,7 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "chat": "concurrently 'cd ./packages/chat && yarn dev'"
+    "start": "yarn page",
+    "chat": "concurrently 'cd ./packages/chat && yarn dev'",
+    "page": "concurrently 'cd ./packages/page && yarn dev'"
   },
   "devDependencies": {
     "lerna": "^6.5.1"
